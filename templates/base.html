@@ -1,5 +1,6 @@
 <!doctype html>
 <html>
+
 <head>
   <title>MiniGit</title>
 
@@ -15,20 +16,21 @@
 <body>
 
   <!-- Top Navbar -->
-  <div class="navbar">
-    <div class="nav-left">
-      <a class="logo" href="/">MiniGit</a>
-    </div>
+<div class="navbar">
+  <div class="navbar-inner">
+    <a class="logo" href="/">MiniGit</a>
 
     <div class="nav-right">
       <a href="/">Repos</a>
+      <a href="/" class="nav-btn">New</a>
     </div>
   </div>
-
+</div>
   <!-- Main Container -->
   <div class="container">
     {% block content %}{% endblock %}
   </div>
 
 </body>
+
 </html>
