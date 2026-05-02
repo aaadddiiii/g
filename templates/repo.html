@@ -2,26 +2,32 @@
 
 {% block content %}
 
-<!-- Repo header -->
 <div class="repo-header">
-  <div class="repo-title">
+  <div class="left">
     <h2>{{name}}</h2>
-    <span class="branch-badge">{{branch}}</span>
+    <span class="branch-pill">{{branch}}</span>
   </div>
 
-  <form method="get" class="branch-form">
-    <input type="hidden" name="path" value="{{path}}">
-    <select name="branch" onchange="this.form.submit()">
-      {% for b in branches %}
-      <option value="{{b}}" {% if b==branch %}selected{% endif %}>
-        {{b}}
-      </option>
-      {% endfor %}
-    </select>
-  </form>
+  <div class="right">
+    <a class="btn" href="/commits/{{name}}?branch={{branch}}">Commits</a>
+
+    <form method="get">
+      <input type="hidden" name="path" value="{{path}}">
+      <select name="branch" onchange="this.form.submit()">
+        {% for b in branches %}
+        <option value="{{b}}" {% if b==branch %}selected{% endif %}>
+          {{b}}
+        </option>
+        {% endfor %}
+      </select>
+    </form>
+  </div>
 </div>
 
+
+
 <!-- Top actions -->
+ 
 <div class="repo-actions">
   <a href="/commits/{{name}}?branch={{branch}}">Commits</a>
 </div>

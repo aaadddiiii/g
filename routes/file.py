@@ -1,8 +1,7 @@
 import os
 from flask import render_template, request, abort
 from utils.git import run_git
-
-REPO_DIR = "repos"
+from config import REPO_DIR
 
 
 def routes(app):

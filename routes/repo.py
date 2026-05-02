@@ -1,10 +1,10 @@
 import os
+import re
+import markdown
 import subprocess
 from flask import request, redirect, render_template, abort
 from utils.git import run_git
-
-REPO_DIR = "repos"
-
+from config import REPO_DIR
 
 def routes(app):
 
@@ -24,20 +24,38 @@ def routes(app):
     # ------------------------
     # Create repo
     # ------------------------
+
+
     @app.route("/create", methods=["POST"])
     def create():
-        name = request.form.get("name", "").strip()
-        name = os.path.basename(name).replace(".git", "")
+        try:
+            name = request.form.get("name", "").strip()
+            name = os.path.basename(name).replace(".git", "")
 
-        if not name:
-            return redirect("/")
+            # validation
+            if not name or not re.match(r'^[a-zA-Z0-9._-]+$', name):
+                return abort(400, "Invalid repository name")
 
-        path = os.path.join(REPO_DIR, f"{name}.git")
+            path = os.path.join(REPO_DIR, f"{name}.git")
 
-        if not os.path.exists(path):
-            subprocess.run(["git", "init", "--bare", path])
+            # prevent overwrite
+            if os.path.exists(path):
+                return abort(409, "Repository already exists")
 
-        return redirect(f"/repo/{name}")
+            # create repo safely
+            result = subprocess.run(
+                ["git", "init", "--bare", path],
+                capture_output=True,
+                text=True
+            )
+
+            if result.returncode != 0:
+                return abort(500, result.stderr.strip())
+
+            return redirect(f"/repo/{name}")
+
+        except Exception as e:
+            return abort(500, str(e))
 
 
     # ------------------------
@@ -131,7 +149,6 @@ def routes(app):
             except:
                 content = raw.encode("latin1").decode("utf-16", errors="ignore")
 
-            import markdown
             readme = markdown.markdown(content)
 
         # ------------------------
