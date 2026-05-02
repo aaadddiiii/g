@@ -2,13 +2,12 @@
 
 {% block content %}
 
-<!-- Repo header -->
+<!-- Header -->
 <div class="repo-header">
   <div class="repo-title">
     <h2>{{name}}</h2>
 
-    <!-- branch dropdown -->
-    <form method="get" class="branch-inline">
+    <form method="get">
       <input type="hidden" name="path" value="{{path}}">
       <select name="branch" onchange="this.form.submit()" class="branch-select">
         {% for b in branches %}
@@ -20,10 +19,13 @@
     </form>
   </div>
 
-  <!-- only keep commits button -->
-  <div>
-    <a class="btn commits-btn" href="/commits/{{name}}?branch={{branch}}">
+  <div class="repo-actions">
+    <a class="btn" href="/commits/{{name}}?branch={{branch}}">
       Commits
+    </a>
+
+    <a class="btn" href="/download/{{name}}?branch={{branch}}">
+      Download ZIP
     </a>
   </div>
 </div>
@@ -38,10 +40,12 @@
 </div>
 
 {% if empty %}
-<div class="empty">No commits yet</div>
+<div class="empty">
+  <div>No commits yet</div>
+  <div class="empty-sub">Create your first commit</div>
+</div>
 {% else %}
 
-<!-- File table -->
 <div class="repo-table">
 
   <!-- Header -->
@@ -52,39 +56,41 @@
   </div>
 
   {% for item in items %}
-  <div class="repo-row">
 
-    <!-- Name -->
-    <span class="col-name">
-      {% if item.type == "tree" %}
-      📁
+<div class="repo-row">
+
+  <!-- Name -->
+  <span class="col-name">
+    {% if item.type == "tree" %}
       <a href="/repo/{{name}}?branch={{branch}}&path={{path}}{{item.name}}/">
-        {{item.name}}
+       📁 {{item.name}}
       </a>
-      {% else %}
-      📄
+    {% else %}
       <a href="/file/{{name}}/{{path}}{{item.name}}?branch={{branch}}">
-        {{item.name}}
+       📄 {{item.name}}
       </a>
-      {% endif %}
-    </span>
+    {% endif %}
+  </span>
 
-    <!-- Commit -->
-    <span class="col-message">
+  <!-- Commit -->
+  <span class="col-message">
+    {% if item.hash %}
       <a href="/commit/{{name}}/{{item.hash}}">
         {{item.last_commit}}
       </a>
-    </span>
+    {% else %}
+      {{item.last_commit}}
+    {% endif %}
+  </span>
 
-    <!-- Time -->
-    <span class="col-time">
-      <a href="/commit/{{name}}/{{item.hash}}">
-        {{item.time}}
-      </a>
-    </span>
+  <!-- Time -->
+  <span class="col-time">
+    {{item.time}}
+  </span>
 
-  </div>
-  {% endfor %}
+</div>
+
+{% endfor %}
 
 </div>
 

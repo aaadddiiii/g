@@ -2,42 +2,60 @@
 
 {% block content %}
 
+<!-- Header -->
 <div class="repo-header">
   <div class="repo-title">
     <h2>{{repo}}</h2>
     <span class="branch-badge">{{branch}}</span>
   </div>
+
+  <div>
+    <a class="btn" href="/file/{{repo}}/{{file}}?branch={{branch}}">
+      Back
+    </a>
+  </div>
 </div>
 
+<!-- Breadcrumb -->
 <div class="breadcrumb">
   <a href="/repo/{{repo}}?branch={{branch}}">root</a>
   <span>/</span>
   <span>{{file}}</span>
 </div>
 
-<h3 style="margin-top:10px;">History</h3>
+<!-- Title -->
+<div class="section-title">
+  History
+</div>
 
+<!-- Commits -->
 <div class="commit-container">
 
   {% for c in commits %}
-  <div class="commit-item">
+  <a href="/commit/{{repo}}/{{c.hash}}" class="commit-link">
 
-    <div class="commit-message">
-      <a href="/commit/{{repo}}/{{c.hash}}">
+    <div class="commit-item">
+
+      <div class="commit-message">
         {{c.message}}
-      </a>
+      </div>
+
+      <div class="commit-sub">
+        <span class="commit-hash">{{c.hash}}</span>
+        <span class="dot">•</span>
+        <span class="commit-author">{{c.author}}</span>
+        <span class="dot">•</span>
+        <span class="commit-time">{{c.time}}</span>
+      </div>
+
     </div>
 
-    <div class="commit-sub">
-      <span class="commit-hash">{{c.hash}}</span>
-      <span class="dot">•</span>
-      <span class="commit-author">{{c.author}}</span>
-      <span class="dot">•</span>
-      <span class="commit-time">{{c.time}}</span>
-    </div>
-
-  </div>
+  </a>
   {% endfor %}
+
+  {% if not commits %}
+  <div class="empty">No history found</div>
+  {% endif %}
 
 </div>
 

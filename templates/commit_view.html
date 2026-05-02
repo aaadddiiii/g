@@ -7,21 +7,50 @@
   <div class="repo-title">
     <h2>{{repo}}</h2>
   </div>
+
+  <div>
+    <a class="btn" href="/repo/{{repo}}">Back</a>
+  </div>
 </div>
 
-<!-- Commit box -->
+<!-- Commit info -->
 <div class="commit-box">
-  <div class="commit-title">Commit {{commit}}</div>
+
+  <div class="commit-title">
+    {{info.message or ("Commit " + commit)}}
+  </div>
+
+  <div class="commit-sub">
+    <span class="commit-hash">{{info.hash}}</span>
+    <span class="dot">•</span>
+    <span class="commit-author">{{info.author}}</span>
+    <span class="dot">•</span>
+    <span class="commit-time">{{info.time}}</span>
+  </div>
+
+  <!-- summary -->
+  <div class="commit-summary">
+    {{summary.files_changed}} files changed
+    <span class="add">+{{summary.additions}}</span>
+    <span class="del">-{{summary.deletions}}</span>
+  </div>
+
 </div>
 
 <!-- Files -->
 {% for file in files %}
 <div class="diff-file">
 
+  <!-- file header -->
   <div class="diff-header">
-    {{file.name}}
+    <span>{{file.name}}</span>
+    <span class="file-stats">
+      <span class="add">+{{file.additions}}</span>
+      <span class="del">-{{file.deletions}}</span>
+    </span>
   </div>
 
+  <!-- diff -->
   <div class="diff-body">
     {% for line in file.lines %}
 

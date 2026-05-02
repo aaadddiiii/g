@@ -1,15 +1,46 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>{{file}}</h3>
 
-<div style="margin-bottom:10px;">
+<!-- Header -->
+<div class="repo-header">
+  <div class="repo-title">
+    <h2>{{name}}</h2>
+    <span class="branch-badge">{{branch}}</span>
+  </div>
+
+  <div>
+    <a class="btn" href="/repo/{{name}}?branch={{branch}}">
+      Back
+    </a>
+  </div>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="/repo/{{name}}?branch={{branch}}">root</a>
+  <span>/</span>
+  <span>{{file}}</span>
+</div>
+
+<!-- File actions -->
+<div class="file-actions">
   <a href="/history/{{name}}/{{file}}?branch={{branch}}">
-    View file history
+    View history
   </a>
 </div>
 
-<pre><code>{{content}}</code></pre>
+<!-- File box -->
+<div class="file-box">
 
+  <div class="file-header">
+    📄 {{file}}
+  </div>
+
+  <div class="file-content">
+    <pre><code>{{content}}</code></pre>
+  </div>
+
+</div>
 
 {% endblock %}

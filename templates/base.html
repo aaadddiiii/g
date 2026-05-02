@@ -1,6 +1,5 @@
 <!doctype html>
 <html>
-
 <head>
   <title>MiniGit</title>
 
@@ -10,27 +9,37 @@
   <!-- Highlight.js -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
-  <script>hljs.highlightAll();</script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      hljs.highlightAll();
+    });
+  </script>
 </head>
 
 <body>
 
-  <!-- Top Navbar -->
-<div class="navbar">
-  <div class="navbar-inner">
-    <a class="logo" href="/">MiniGit</a>
+  <!-- NAVBAR -->
+  <div class="navbar">
+    <div class="navbar-inner">
 
-    <div class="nav-right">
-      <a href="/">Repos</a>
-      <a href="/" class="nav-btn">New</a>
+      <!-- LEFT -->
+      <div class="nav-left">
+        <a class="logo" href="/">MiniGit</a>
+      </div>
+
+      <!-- RIGHT -->
+      <div class="nav-right">
+        <a href="/" class="nav-btn">Repos</a>
+        <a href="/" class="nav-btn">New</a>
+      </div>
+
     </div>
   </div>
-</div>
-  <!-- Main Container -->
+
+  <!-- MAIN CONTENT -->
   <div class="container">
     {% block content %}{% endblock %}
   </div>
 
 </body>
-
 </html>

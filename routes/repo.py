@@ -13,11 +13,37 @@ def routes(app):
     # ------------------------
     @app.route("/")
     def index():
-        repos = [
-            r.replace(".git", "")
-            for r in os.listdir(REPO_DIR)
-            if r.endswith(".git")
-        ]
+        repos = []
+
+        for r in os.listdir(REPO_DIR):
+            if not r.endswith(".git"):
+                continue
+
+            name = r.replace(".git", "")
+
+            # last commit
+            log, _ = run_git(
+                ["log", "-1", "--pretty=format:%h|%s|%ar"],
+                repo=name
+            )
+
+            last_commit = ""
+            time = ""
+
+            if log:
+                parts = log.split("|")
+                if len(parts) == 3:
+                    _, last_commit, time = parts
+
+            repos.append({
+                "name": name,
+                "last_commit": last_commit,
+                "time": time
+            })
+
+        # sort newest first (optional)
+        repos.sort(key=lambda x: x["time"], reverse=True)
+
         return render_template("index.html", repos=repos)
 
 
@@ -58,13 +84,55 @@ def routes(app):
             return abort(500, str(e))
 
 
+    # Download Repo
+    @app.route("/download/<repo>")
+    def download_repo(repo):
+        import os, tempfile
+        from flask import abort, send_file, request
+        from config import REPO_DIR
+        from utils.git import run_git
+
+        # check repo exists
+        repo_path = os.path.join(REPO_DIR, f"{repo}.git")
+        if not os.path.exists(repo_path):
+            abort(404)
+
+        # get branch (optional)
+        branch = request.args.get("branch", "main")
+
+        # temp zip file
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".zip")
+        zip_path = tmp.name
+        tmp.close()
+
+        # create zip using git
+        run_git(
+            ["archive", "--format=zip", "-o", zip_path, branch],
+            repo
+        )
+
+        return send_file(
+            zip_path,
+            as_attachment=True,
+            download_name=f"{repo}.zip"
+        )
+
     # ------------------------
     # Repo view
     # ------------------------
     @app.route("/repo/<name>")
     def repo(name):
-        path = os.path.join(REPO_DIR, f"{name}.git")
-        if not os.path.exists(path):
+        import os
+        from flask import abort, request, render_template
+        from config import REPO_DIR
+        from utils.git import run_git
+        import markdown
+
+        # ------------------------
+        # Validate repo
+        # ------------------------
+        repo_path = os.path.join(REPO_DIR, f"{name}.git")
+        if not os.path.exists(repo_path):
             abort(404)
 
         branch = request.args.get("branch", "main")
@@ -75,6 +143,9 @@ def routes(app):
 
         tree_path = f"{branch}:{subpath}" if subpath else branch
 
+        # ------------------------
+        # Get tree
+        # ------------------------
         out, err = run_git(["ls-tree", tree_path], repo=name)
 
         # ------------------------
@@ -94,7 +165,7 @@ def routes(app):
             )
 
         # ------------------------
-        # Files + commit info (FIXED)
+        # Parse files
         # ------------------------
         items = []
 
@@ -103,16 +174,19 @@ def routes(app):
                 continue
 
             try:
-                # correct parsing
                 meta, filename = line.split("\t", 1)
                 meta_parts = meta.split()
                 type_ = meta_parts[1]
             except:
                 continue
 
-            # commit info
+            filepath = f"{subpath}{filename}"
+
+            # ------------------------
+            # Get LAST commit (FIXED)
+            # ------------------------
             log_out, _ = run_git(
-                ["log", "-1", "--pretty=format:%h|%s|%ar", "--", f"{subpath}{filename}"],
+                ["log", "-1", "--pretty=format:%h|%s|%ar", branch, "--", filepath],
                 repo=name
             )
 
@@ -126,14 +200,14 @@ def routes(app):
             items.append({
                 "type": type_,
                 "name": filename,
-                "last_commit": msg,
+                "last_commit": msg or "—",
                 "time": time,
                 "hash": commit_hash
-
             })
 
+        # folders first
         items.sort(key=lambda x: (x["type"] != "tree", x["name"]))
-        
+
         # ------------------------
         # README
         # ------------------------
@@ -145,11 +219,13 @@ def routes(app):
 
         if raw:
             try:
-                content = raw
+                readme = markdown.markdown(raw)
             except:
-                content = raw.encode("latin1").decode("utf-16", errors="ignore")
-
-            readme = markdown.markdown(content)
+                try:
+                    content = raw.encode("latin1").decode("utf-16", errors="ignore")
+                    readme = markdown.markdown(content)
+                except:
+                    readme = None
 
         # ------------------------
         # Breadcrumbs
@@ -169,9 +245,12 @@ def routes(app):
         branches = [
             b.replace("*", "").strip()
             for b in branches_out.split("\n")
-            if b
+            if b.strip()
         ]
 
+        # ------------------------
+        # Render
+        # ------------------------
         return render_template(
             "repo.html",
             name=name,
@@ -183,3 +262,5 @@ def routes(app):
             empty=False,
             branches=branches
         )
+            
+            

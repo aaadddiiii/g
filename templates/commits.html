@@ -2,37 +2,52 @@
 
 {% block content %}
 
-<div class="commit-header">
+<!-- Header -->
+<div class="repo-header">
   <div class="repo-title">
     <h2>{{name}}</h2>
     <span class="branch-badge">{{branch}}</span>
   </div>
+
+  <div>
+    <a class="btn" href="/repo/{{name}}?branch={{branch}}">
+      Back
+    </a>
+  </div>
 </div>
 
+<!-- Commit list -->
 <div class="commit-container">
 
   {% for c in commits %}
-  <div class="commit-item">
+  <a href="/commit/{{name}}/{{c.hash}}" class="commit-link">
 
-    <div class="commit-main">
-      <div class="commit-message"> <a href="/commit/{{name}}/{{c.hash}}">
-          {{c.message}}
-        </a> </div>
+    <div class="commit-item">
 
-        <div class="commit-sub">
-          <span class="commit-hash">{{c.hash}}</span>
-          <span class="dot">•</span>
-          <span class="commit-author">{{c.author}}</span>
-          {% if c.time %}
-          <span class="dot">•</span>
-          <span class="commit-time">{{c.time}}</span>
-          {% endif %}
-        </div>
+      <div class="commit-message">
+        {{c.message}}
+      </div>
+
+      <div class="commit-sub">
+        <span class="commit-hash">{{c.hash}}</span>
+        <span class="dot">•</span>
+        <span class="commit-author">{{c.author}}</span>
+
+        {% if c.time %}
+        <span class="dot">•</span>
+        <span class="commit-time">{{c.time}}</span>
+        {% endif %}
       </div>
 
     </div>
-    {% endfor %}
 
-  </div>
+  </a>
+  {% endfor %}
 
-  {% endblock %}
+  {% if not commits %}
+  <div class="empty">No commits yet</div>
+  {% endif %}
+
+</div>
+
+{% endblock %}

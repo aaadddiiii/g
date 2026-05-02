@@ -1,16 +1,52 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h3>Repositories</h3>
 
-<form method="post" action="/create">
-  <input name="name" placeholder="repo name">
-  <button>Create</button>
-</form>
+<!-- Header -->
+<div class="index-header">
+  <h2>Repositories</h2>
+</div>
 
-<ul>
+<!-- Create repo -->
+<div class="index-create">
+  <form method="post" action="/create">
+    <input type="text" name="name" placeholder="Create new repository..." required>
+    <button type="submit">Create</button>
+  </form>
+</div>
+
+<!-- Repo list -->
+<div class="index-table">
+
+  <!-- header row -->
+  <div class="index-row header">
+    <span>Name</span>
+    <span>Last commit</span>
+    <span class="index-time">Updated</span>
+  </div>
+
   {% for r in repos %}
-    <li><a href="/repo/{{r}}">{{r}}</a></li>
+  <a href="/repo/{{r.name}}" class="index-row">
+
+    <span class="index-name">
+      📦 {{r.name}}
+    </span>
+
+    <span class="index-message">
+      {{r.last_commit or "—"}}
+    </span>
+
+    <span class="index-time">
+      {{r.time or ""}}
+    </span>
+
+  </a>
   {% endfor %}
-</ul>
+
+  {% if not repos %}
+  <div class="index-empty">No repositories yet</div>
+  {% endif %}
+
+</div>
+
 {% endblock %}
