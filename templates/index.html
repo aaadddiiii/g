@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>Repositories</h3>
+
+<form method="post" action="/create">
+  <input name="name" placeholder="repo name">
+  <button>Create</button>
+</form>
+
+<ul>
+  {% for r in repos %}
+    <li><a href="/repo/{{r}}">{{r}}</a></li>
+  {% endfor %}
+</ul>
+{% endblock %}

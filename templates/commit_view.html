@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Header -->
+<div class="repo-header">
+  <div class="repo-title">
+    <h2>{{repo}}</h2>
+  </div>
+</div>
+
+<!-- Commit box -->
+<div class="commit-box">
+  <div class="commit-title">Commit {{commit}}</div>
+</div>
+
+<!-- Files -->
+{% for file in files %}
+<div class="diff-file">
+
+  <div class="diff-header">
+    {{file.name}}
+  </div>
+
+  <div class="diff-body">
+    {% for line in file.lines %}
+
+      {% if line.startswith('+++') or line.startswith('---') %}
+        <div class="line meta">{{line}}</div>
+
+      {% elif line.startswith('+') %}
+        <div class="line add">{{line}}</div>
+
+      {% elif line.startswith('-') %}
+        <div class="line remove">{{line}}</div>
+
+      {% else %}
+        <div class="line">{{line}}</div>
+
+      {% endif %}
+
+    {% endfor %}
+  </div>
+
+</div>
+{% endfor %}
+
+{% endblock %}

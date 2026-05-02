@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Repo header -->
+<div class="repo-header">
+  <div class="repo-title">
+    <h2>{{name}}</h2>
+    <span class="branch-badge">{{branch}}</span>
+  </div>
+
+  <form method="get" class="branch-form">
+    <input type="hidden" name="path" value="{{path}}">
+    <select name="branch" onchange="this.form.submit()">
+      {% for b in branches %}
+      <option value="{{b}}" {% if b==branch %}selected{% endif %}>
+        {{b}}
+      </option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+<!-- Top actions -->
+<div class="repo-actions">
+  <a href="/commits/{{name}}?branch={{branch}}">Commits</a>
+</div>
+
+<!-- Breadcrumb -->
+<div class="breadcrumb">
+  <a href="/repo/{{name}}?branch={{branch}}">root</a>
+  {% for b, p in breadcrumbs %}
+  <span>/</span>
+  <a href="/repo/{{name}}?branch={{branch}}&path={{p}}">{{b}}</a>
+  {% endfor %}
+</div>
+
+{% if empty %}
+<div class="empty">No commits yet</div>
+{% else %}
+
+<!-- File table -->
+<div class="repo-table">
+
+  <!-- Header -->
+  <div class="repo-row header">
+    <span>Name</span>
+    <span>Last commit</span>
+    <span class="col-time">Time</span>
+  </div>
+
+  {% for item in items %}
+  <div class="repo-row">
+
+    <!-- Name -->
+    <span class="col-name">
+      {% if item.type == "tree" %}
+      📁
+      <a href="/repo/{{name}}?branch={{branch}}&path={{path}}{{item.name}}/">
+        {{item.name}}
+      </a>
+      {% else %}
+      📄
+      <a href="/file/{{name}}/{{path}}{{item.name}}?branch={{branch}}">
+        {{item.name}}
+      </a>
+      {% endif %}
+    </span>
+
+    <!-- Commit -->
+    <span class="col-message">
+      <a href="/commit/{{name}}/{{item.hash}}">
+        {{item.last_commit}}
+      </a>
+    </span>
+
+    <!-- Time -->
+    <span class="col-time">
+      <a href="/commit/{{name}}/{{item.hash}}">
+        {{item.time}}
+      </a>
+    </span>
+
+
+
+  </div>
+  {% endfor %}
+
+</div>
+
+{% if readme %}
+<div class="readme-box">
+  {{ readme|safe }}
+</div>
+{% endif %}
+
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="commit-header">
+  <div class="repo-title">
+    <h2>{{name}}</h2>
+    <span class="branch-badge">{{branch}}</span>
+  </div>
+</div>
+
+<div class="commit-container">
+
+  {% for c in commits %}
+  <div class="commit-item">
+
+    <div class="commit-main">
+      <div class="commit-message"> <a href="/commit/{{name}}/{{c.hash}}">
+          {{c.message}}
+        </a> </div>
+
+        <div class="commit-sub">
+          <span class="commit-hash">{{c.hash}}</span>
+          <span class="dot">•</span>
+          <span class="commit-author">{{c.author}}</span>
+          {% if c.time %}
+          <span class="dot">•</span>
+          <span class="commit-time">{{c.time}}</span>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+    {% endfor %}
+
+  </div>
+
+  {% endblock %}

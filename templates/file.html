@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h3>{{file}}</h3>
+
+<div style="margin-bottom:10px;">
+  <a href="/history/{{name}}/{{file}}?branch={{branch}}">
+    View file history
+  </a>
+</div>
+
+<pre><code>{{content}}</code></pre>
+
+
+{% endblock %}
